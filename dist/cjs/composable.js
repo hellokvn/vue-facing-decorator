@@ -29,37 +29,40 @@ exports.isComposable = isComposable;
 function instantiateComposable(Cls, props, ctx) {
     const slot = (0, slot_1.obtainSlot)(Cls.prototype);
     const sample = new Cls();
+    // Make all fields reactive
     const raw = {};
-    const dataKeys = Object.keys(sample);
-    dataKeys.forEach((key) => {
+    const keys = Object.keys(sample);
+    keys.forEach((key) => {
         raw[key] = (0, vue_1.ref)(sample[key]);
     });
     const inst = Object.create(Cls.prototype);
-    for (const key of dataKeys) {
+    for (const key of keys) {
         Object.defineProperty(inst, key, {
-            get() {
-                return raw[key].value;
-            },
-            set(v) {
-                raw[key].value = v;
-            },
+            get: () => raw[key].value,
+            set: (v) => { raw[key].value = v; },
             enumerable: true,
         });
     }
+    // Setup @Setup fields
     const setupMap = slot.getMap('setup');
     let promises = null;
     if (setupMap && setupMap.size > 0) {
         for (const name of setupMap.keys()) {
-            const setupState = setupMap.get(name).setupFunction(props, ctx);
-            if (setupState instanceof Promise) {
+            let setupVal = setupMap.get(name).setupFunction(props, ctx);
+            // 💡 recursively resolve @Composable classes
+            if (isComposable(setupVal)) {
+                setupVal = instantiateComposable(setupVal, props, ctx);
+            }
+            if (setupVal instanceof Promise) {
                 promises !== null && promises !== void 0 ? promises : (promises = []);
-                promises.push(setupState.then((result) => (inst[name] = result)));
+                promises.push(setupVal.then((v) => { inst[name] = v; }));
             }
             else {
-                inst[name] = setupState;
+                inst[name] = setupVal;
             }
         }
     }
+    // Setup @Inject fields
     const injectMap = slot.getMap('inject');
     if (injectMap && injectMap.size > 0) {
         injectMap.forEach((config, name) => {
@@ -68,28 +71,28 @@ function instantiateComposable(Cls, props, ctx) {
             inst[name] = (0, vue_1.inject)(key, config.default);
         });
     }
+    // Lifecycle hooks
     const proto = Cls.prototype;
     Object.keys(lifecycleMap).forEach((hook) => {
         if (typeof proto[hook] === 'function') {
             lifecycleMap[hook](() => proto[hook].call(inst));
         }
     });
+    // created()
     if (typeof proto.created === 'function') {
         proto.created.call(inst);
     }
+    // Setup watchers
     const watchMap = slot.getMap('watch');
-    // console.log({ watchMap });
     if (watchMap && watchMap.size > 0) {
         watchMap.forEach((watchConfigs, name) => {
-            const configsArray = Array.isArray(watchConfigs)
-                ? watchConfigs
-                : [watchConfigs];
-            configsArray.forEach((conf) => {
+            const configs = Array.isArray(watchConfigs) ? watchConfigs : [watchConfigs];
+            configs.forEach((conf) => {
                 var _a;
                 const handler = (_a = conf.handler) !== null && _a !== void 0 ? _a : inst[name];
                 if (typeof handler !== 'function')
                     return;
-                (0, vue_1.watch)(() => raw[conf.key].value, (...args) => handler.apply(inst, args), {
+                (0, vue_1.watch)(() => { var _a; return (_a = raw[conf.key]) === null || _a === void 0 ? void 0 : _a.value; }, (...args) => handler.apply(inst, args), {
                     immediate: conf.immediate,
                     deep: conf.deep,
                 });
