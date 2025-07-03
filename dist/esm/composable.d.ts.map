@@ -1,0 +1,1 @@
+{"version":3,"file":"composable.d.ts","sourceRoot":"","sources":["../../src/composable.ts"],"names":[],"mappings":"AAGA,eAAO,MAAM,gBAAgB,EAAE,OAAO,MAAkD,CAAA;AAExF,eAAO,MAAM,UAAU;;;;;CAErB,CAAA;AAEF,wBAAgB,YAAY,CAAC,KAAK,EAAE,GAAG,GAAG,OAAO,CAEhD;AAED,wBAAgB,qBAAqB,CAAC,GAAG,EAAE,GAAG,EAAE,KAAK,EAAE,GAAG,EAAE,GAAG,EAAE,GAAG,GAAG,GAAG,GAAG,OAAO,CAAC,GAAG,CAAC,CAuBxF"}

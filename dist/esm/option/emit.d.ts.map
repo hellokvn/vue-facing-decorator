@@ -1,0 +1,1 @@
+{"version":3,"file":"emit.d.ts","sourceRoot":"","sources":["../../../src/option/emit.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,OAAO,EAAE,MAAM,UAAU,CAAA;AACvC,OAAO,KAAK,EAAE,aAAa,EAAE,MAAM,kBAAkB,CAAA;AAErD,MAAM,MAAM,UAAU,GAAG,IAAI,GAAG,MAAM,CAAA;AAEtC,eAAO,MAAM,SAAS;;;;;CAIpB,CAAA;AAEF,wBAAgB,KAAK,CAAC,IAAI,EAAE,OAAO,EAAE,aAAa,EAAE,aAAa,QA2BhE"}
