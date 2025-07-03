@@ -27,7 +27,7 @@ export function build(cons: VueCons, optionBuilder: OptionBuilder) {
   if (!map || map.size === 0) {
     return
   }
-  const setup: OptionSetupFunction = function (props, ctx) {
+  const setup: OptionSetupFunction = function (props: any, ctx: any) {
 
     const setupData: Record<string, any> = {};
     let promises: Promise<any>[] | null = null;
